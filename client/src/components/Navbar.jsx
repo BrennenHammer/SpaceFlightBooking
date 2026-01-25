@@ -11,19 +11,20 @@ const Navbar = () => {
 
 const Nav = styled.nav`
   height: 7vh;
-  width: 100%;
-  background-color: lightblue;
+  width: 103%;
+  margin-top: -8px;
+  margin-left: -8px;
   display: flex;
   align-items: center;
   position: relative;
-  border-bottom: 2px solid black;
 `;
 
 const Left = styled.h1`
   margin-left: 20px;
   font-size: 25px;
   font-weight: bold;
-  font-family: cursive;
+  margin-top: 25px;
+  font-family: sans-serif;
   cursor: pointer;
   white-space: nowrap;     /* prevents line breaks */
 `;
@@ -33,7 +34,7 @@ const Center = styled.div`
   left: 50%;
   transform: translateX(-50%);
   font-size: 20px;
-  font-family: cursive;
+  margin-top: 7px;
   white-space: nowrap;     /* prevents line breaks */
 `;
 

@@ -70,9 +70,9 @@ const Home = () => {
         </HeroText>
 
         <HeroVisual>
+            <Stars />
             <Earth />
-          <Planet />
-          <Stars />
+          
         </HeroVisual>
       </Hero>
 
@@ -126,8 +126,9 @@ export default Home;
 
 const Page = styled.div`
   min-height: 100vh;
-  background: radial-gradient(circle at top, #0b1d2d, #02060a 70%);
+  background: radial-gradient( #0b1d2d, #02060a 70%);
   color: white;
+   width: 100%;
 `;
 
 /* HERO */
@@ -135,7 +136,7 @@ const Hero = styled.section`
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   align-items: center;
-  padding: 80px 60px;
+  padding: 0px 40px;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -171,18 +172,16 @@ const CTA = styled.button`
 
 /* VISUAL */
 const HeroVisual = styled.div`
-  position: relative;
-  height: 300px;
+  height: 320px;
+  width: 320px;
+  margin: auto;
+
+  @media (max-width: 900px) {
+    height: 260px;
+    width: 260px;
+  }
 `;
 
-const Planet = styled.div`
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #9bdcff, #1b3c5f);
-  margin: auto;
-  box-shadow: 0 0 90px rgba(100, 180, 255, 0.35);
-`;
 
 const Stars = styled.div`
   position: absolute;
@@ -197,7 +196,7 @@ const Stars = styled.div`
 const PackagesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
+  gap: 15px;
   max-width: 980px;
   margin: 40px auto;
   padding: 0 24px;
@@ -212,10 +211,10 @@ const PackagesGrid = styled.div`
 `;
 
 const PackageCard = styled.div`
-  height: 150px;
+  height: 140px;
   border-radius: 20px;
   cursor: pointer;
-  background: rgba(180, 220, 240, 0.95);
+  background: rgba(68, 133, 176, 0.95);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 
   transform:

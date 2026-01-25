@@ -7,12 +7,12 @@ const EarthMesh = () => {
 
   const colorMap = useLoader(
     TextureLoader,
-    "/src/images/earth/earth_daymap.jpg"
+    "/src/assets/images/earthtexture.jpg"
   );
 
   // Smooth continuous rotation (real globe rotation)
   useFrame(() => {
-    meshRef.current.rotation.y += 0.0008;
+    meshRef.current.rotation.y += .0100;
   });
 
   return (
