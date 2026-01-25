@@ -1,27 +1,19 @@
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import Navbar from "../components/Navbar";
+import Earth from "../components/Earth";
 
-
-const cosmicPulse = keyframes`
-  0% { opacity: 0.25; transform: scale(0.96); }
-  50% { opacity: 0.55; transform: scale(1.04); }
-  100% { opacity: 0.25; transform: scale(0.96); }
+/* =======================
+   ANIMATIONS (SUBTLE ONLY)
+======================= */
+const starDrift = keyframes`
+  from { transform: translateY(0); }
+  to { transform: translateY(-40px); }
 `;
 
-const nebulaShift = keyframes`
-  0% { background-color: rgba(50, 120, 255, 0.3); }
-  33% { background-color: rgba(180, 50, 255, 0.3); }
-  66% { background-color: rgba(50, 255, 255, 0.3); }
-  100% { background-color: rgba(50, 120, 255, 0.3); }
-`;
-
-const starShimmer = keyframes`
-  0%, 100% { opacity: 0.3; transform: translate(0, 0) scale(1); }
-  50% { opacity: 0.8; transform: translate(2px, -2px) scale(1.1); }
-`;
-
-
+/* =======================
+   INTERACTIONS
+======================= */
 const handleTilt = (e) => {
   const card = e.currentTarget;
   const rect = card.getBoundingClientRect();
@@ -29,61 +21,28 @@ const handleTilt = (e) => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * 8;
-  const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * -8;
+  const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * 5;
+  const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * -5;
 
   card.style.setProperty("--rx", `${rotateX}deg`);
   card.style.setProperty("--ry", `${rotateY}deg`);
-  card.style.setProperty("--x", `${(x / rect.width) * 100}%`);
-  card.style.setProperty("--y", `${(y / rect.height) * 100}%`);
 };
 
 const resetTilt = (e) => {
-  const card = e.currentTarget;
-  card.style.setProperty("--rx", "0deg");
-  card.style.setProperty("--ry", "0deg");
+  e.currentTarget.style.setProperty("--rx", "0deg");
+  e.currentTarget.style.setProperty("--ry", "0deg");
 };
 
 /* =======================
-   PACKAGE DATA
+   DATA
 ======================= */
 const packagesData = [
-  {
-    name: "Intergalactic Package",
-    price: "$400,000",
-    description:
-      "Luxury space flight with private cabin, zero-gravity lounge, and orbital views."
-  },
-  {
-    name: "Explorer Package",
-    price: "$250,000",
-    description:
-      "Extended orbital travel with research access and EVA training."
-  },
-  {
-    name: "Mars Package",
-    price: "$200,000",
-    description:
-      "Mars expedition preparation program with long-term mission simulation."
-  },
-  {
-    name: "Lunar Package",
-    price: "$100,000",
-    description:
-      "Moon fly-by experience with live Earthrise viewing."
-  },
-  {
-    name: "Orbital Package",
-    price: "$50,000",
-    description:
-      "Low-Earth orbit experience with guided space orientation."
-  },
-  {
-    name: "Facilities Package",
-    price: "$1,000",
-    description:
-      "Introductory training facilities access and astronaut orientation."
-  }
+  { name: "Intergalactic Package", price: "$400,000", description: "Private cabin, zero-gravity lounge, orbital views." },
+  { name: "Explorer Package", price: "$250,000", description: "Extended orbital travel with EVA training." },
+  { name: "Mars Package", price: "$200,000", description: "Long-term Mars mission preparation." },
+  { name: "Lunar Package", price: "$100,000", description: "Moon fly-by and Earthrise experience." },
+  { name: "Orbital Package", price: "$50,000", description: "Low-Earth orbit orientation flight." },
+  { name: "Facilities Package", price: "$1,000", description: "Astronaut training facility access." }
 ];
 
 /* =======================
@@ -93,58 +52,65 @@ const Home = () => {
   const [flippedIndex, setFlippedIndex] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
 
-  const handleCloseModal = () => {
+  const closeModal = () => {
     setSelectedPackage(null);
-    setFlippedIndex(null); // Reset flipped card
+    setFlippedIndex(null);
   };
 
   return (
     <Page>
       <Navbar />
 
+      {/* HERO */}
       <Hero>
-        <h1>Space traveling for the future of humanity is here!</h1>
-        <h2>Book with the greatest!</h2>
+        <HeroText>
+          <h1>Space travel for the future of humanity</h1>
+          <p>Premium orbital experiences designed for pioneers.</p>
+          <CTA>Explore Packages</CTA>
+        </HeroText>
+
+        <HeroVisual>
+            <Earth />
+          <Planet />
+          <Stars />
+        </HeroVisual>
       </Hero>
 
-      <PackagesSection>
-        <PackageHeader>Packages</PackageHeader>
+      {/* PACKAGES */}
+      <PackagesGrid>
+        {packagesData.map((pkg, index) => (
+          <PackageCard
+            key={index}
+            onMouseMove={handleTilt}
+            onMouseLeave={resetTilt}
+            onClick={() =>
+              flippedIndex === index
+                ? setSelectedPackage(pkg)
+                : setFlippedIndex(index)
+            }
+          >
+            <CardInner flipped={flippedIndex === index}>
+              <CardFront>
+                <Title>{pkg.name}</Title>
+                <Price>{pkg.price}</Price>
+              </CardFront>
 
-        <PackagesGrid>
-          {packagesData.map((pkg, index) => (
-            <PackageCard
-              key={index}
-              onMouseMove={handleTilt}
-              onMouseLeave={resetTilt}
-              onClick={() =>
-                flippedIndex === index
-                  ? setSelectedPackage(pkg)
-                  : setFlippedIndex(index)
-              }
-            >
-              <CardInner flipped={flippedIndex === index}>
-                <CardFront>
-                  <Title>{pkg.name}</Title>
-                  <Price>{pkg.price}</Price>
-                </CardFront>
-
-                <CardBack>
-                  <p>{pkg.description}</p>
-                  <small>Click again for details</small>
-                </CardBack>
-              </CardInner>
-            </PackageCard>
-          ))}
-        </PackagesGrid>
-      </PackagesSection>
+              <CardBack>
+                <p>{pkg.description}</p>
+                <small>Click again for details</small>
+              </CardBack>
+            </CardInner>
+          </PackageCard>
+        ))}
+      </PackagesGrid>
 
       {selectedPackage && (
-        <ModalOverlay onClick={handleCloseModal}>
+        <ModalOverlay onClick={closeModal}>
           <Modal onClick={(e) => e.stopPropagation()}>
             <h2>{selectedPackage.name}</h2>
             <Price>{selectedPackage.price}</Price>
             <p>{selectedPackage.description}</p>
-            <CloseButton onClick={handleCloseModal}>Close</CloseButton>
+            <CloseButton onClick={closeModal}>Close</CloseButton>
           </Modal>
         </ModalOverlay>
       )}
@@ -155,125 +121,129 @@ const Home = () => {
 export default Home;
 
 /* =======================
-   STYLED COMPONENTS
+   STYLES
 ======================= */
+
 const Page = styled.div`
   min-height: 100vh;
-  background: #000000;
+  background: radial-gradient(circle at top, #0b1d2d, #02060a 70%);
+  color: white;
 `;
 
+/* HERO */
 const Hero = styled.section`
-  text-align: center;
-  padding: 10px 10px 10px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  padding: 80px 60px;
 
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+`;
+
+const HeroText = styled.div`
   h1 {
-    font-size: 30px;
+    font-size: 44px;
+    font-weight: 600;
+    margin-bottom: 14px;
   }
 
-  h2 {
-    margin-top: 0px;
-    font-weight: 400;
+  p {
+    opacity: 0.85;
+    max-width: 420px;
+    font-size: 17px;
   }
 `;
 
-const PackagesSection = styled.section`
-  padding: 10px 20px;
+const CTA = styled.button`
+  margin-top: 28px;
+  padding: 14px 26px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #7aa9ff, #9bdcff);
+  color: #02060a;
 `;
 
-const PackageHeader = styled.h2`
-  text-align: center;
-  margin-bottom: 40px;
+/* VISUAL */
+const HeroVisual = styled.div`
+  position: relative;
+  height: 300px;
 `;
 
+const Planet = styled.div`
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #9bdcff, #1b3c5f);
+  margin: auto;
+  box-shadow: 0 0 90px rgba(100, 180, 255, 0.35);
+`;
+
+const Stars = styled.div`
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(white 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.2;
+  animation: ${starDrift} 45s linear infinite;
+`;
+
+/* PACKAGES */
 const PackagesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 1fr));
-  gap: 28px;
-  max-width: 900px;
-  margin: 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  max-width: 980px;
+  margin: 40px auto;
+  padding: 0 24px;
 
-  @media (max-width: 680px) {
+  @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 420px) {
+  @media (max-width: 520px) {
     grid-template-columns: 1fr;
   }
 `;
 
 const PackageCard = styled.div`
   height: 150px;
-  border-radius: 18px;
+  border-radius: 20px;
   cursor: pointer;
-  position: relative;
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  background: rgba(180, 220, 240, 0.95);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 
-  background: lightblue;
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  overflow: hidden;
+  transform:
+    perspective(900px)
+    rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
 
-  /* 🌌 OUTER COSMIC AURA */
-  &::after {
-    content: "";
-    position: absolute;
-    inset: -6px;
-    border-radius: inherit;
-    background: radial-gradient(
-      circle,
-      rgba(9, 12, 15, 0.45),
-      rgba(4, 7, 19, 0.25),
-      transparent 65%
-    );
-    filter: blur(10px);
-    opacity: 0.35;
-    z-index: -1;
-    animation: ${cosmicPulse} 6s ease-in-out infinite;
-  }
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 
-  /* ✨ CURSOR FOLLOWING INNER GLOW */
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -50%;
-    background: radial-gradient(
-      circle at var(--x, 50%) var(--y, 50%),
-      rgba(135, 149, 230, 0.45),
-      rgba(255, 255, 255, 0.25),
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-  }
+  &:hover {
+    transform:
+      perspective(900px)
+      translateY(-6px)
+      rotateX(var(--rx, 0deg))
+      rotateY(var(--ry, 0deg));
 
-  &:hover::before {
-    opacity: 1;
-  }
-
-  &:hover::after {
-    opacity: 0.6;
-    filter: blur(22px);
-  }
-
-  @media (max-width: 768px) {
-    transform: none !important;
-    &::after {
-      animation: none;
-    }
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
   }
 `;
 
 const CardInner = styled.div`
   width: 100%;
   height: 100%;
-  position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  transform: ${({ flipped }) =>
-    flipped ? "rotateY(180deg)" : "rotateY(0deg)"};
+  transition: transform 0.6s ease;
+  transform: ${({ flipped }) => (flipped ? "rotateY(180deg)" : "rotateY(0)")};
 `;
 
 const CardFace = styled.div`
@@ -281,58 +251,59 @@ const CardFace = styled.div`
   inset: 0;
   backface-visibility: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 `;
 
 const CardFront = styled(CardFace)`
-  transform: translateZ(40px);
+  transform: translateZ(20px);
 `;
 
 const CardBack = styled(CardFace)`
-  transform: rotateY(180deg) translateZ(40px);
-  padding: 14px;
+  transform: rotateY(180deg) translateZ(20px);
   font-size: 14px;
+  padding: 16px;
   text-align: center;
 `;
 
 const Title = styled.h3`
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #02060a;
 `;
 
 const Price = styled.div`
   margin-top: 8px;
-  font-weight: bold;
+  font-weight: 600;
+  color: #02060a;
 `;
 
+/* MODAL */
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const Modal = styled.div`
-  background: rgba(255, 255, 255, 0.95);
-  padding: 30px;
-  border-radius: 18px;
+  background: white;
+  padding: 32px;
+  border-radius: 20px;
   max-width: 420px;
   width: 90%;
+  color: #02060a;
 `;
 
 const CloseButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 16px;
-  border-radius: 10px;
+  margin-top: 22px;
+  padding: 12px 18px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  background: black;
+  background: #02060a;
   color: white;
-  &:hover {
-    opacity: 0.85;
-  }
 `;
