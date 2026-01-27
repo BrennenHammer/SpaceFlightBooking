@@ -1,41 +1,48 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
     <Nav>
       <Left>Space Travel Agency</Left>
-      <Center>Book your space travel!</Center>
+
+      <Right>
+        <NavLink to="/about">About</NavLink>
+      </Right>
     </Nav>
   );
 };
 
+export default Navbar;
+
+
 const Nav = styled.nav`
   height: 7vh;
-  width: 103%;
-  margin-top: -8px;
-  margin-left: -8px;
+  width: 100%;
   display: flex;
   align-items: center;
   position: relative;
 `;
 
 const Left = styled.h1`
-  margin-left: 20px;
+  margin-left: 40px;
   font-size: 25px;
   font-weight: bold;
-  margin-top: 25px;
   font-family: sans-serif;
-  cursor: pointer;
-  white-space: nowrap;     /* prevents line breaks */
+  white-space: nowrap;
 `;
 
-const Center = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 20px;
-  margin-top: 7px;
-  white-space: nowrap;     /* prevents line breaks */
+const Right = styled.div`
+  margin-left: auto;
+  margin-right: 40px;
 `;
 
-export default Navbar;
+const NavLink = styled(Link)`
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
