@@ -3,17 +3,11 @@ import styled, { keyframes } from "styled-components";
 import Navbar from "../components/Navbar";
 import Earth from "../components/Earth";
 
-/* =======================
-   ANIMATIONS (SUBTLE ONLY)
-======================= */
 const starDrift = keyframes`
   from { transform: translateY(0); }
   to { transform: translateY(-40px); }
 `;
 
-/* =======================
-   INTERACTIONS
-======================= */
 const handleTilt = (e) => {
   const card = e.currentTarget;
   const rect = card.getBoundingClientRect();
@@ -115,79 +109,85 @@ const Home = () => {
         </ModalOverlay>
       )}
       <Page2>
-      <Container>
-        {/* HERO */}
-        <Hero2>
-          <h1>
-            We build modern web experiences that feel fast, intentional, and
-            reliable.
-          </h1>
-          <p>
-            Space Travel Agency focuses on clean interfaces, thoughtful
-            architecture, and performance-first development — without the
-            fluff.
-          </p>
-        </Hero2>
+  <Container>
+    {/* HERO */}
+    <Hero2>
+      <h1>
+        Making space accessible through carefully designed travel experiences.
+      </h1>
+      <p>
+        Space Travel Agency curates premium journeys beyond Earth — combining
+        cutting-edge aerospace technology with unforgettable destinations.
+      </p>
+    </Hero2>
 
-        {/* SPLIT SECTION */}
-        <Split>
+    {/* SPLIT SECTION */}
+    <Split>
+      <div>
+        <h2>What We Offer</h2>
+        <p>
+          From low-Earth orbit flights to lunar fly-bys and Mars mission
+          preparation, our packages are designed for explorers at every level.
+        </p>
+        <p>
+          Each experience is built around safety, comfort, and once-in-a-lifetime
+          views of the universe.
+        </p>
+      </div>
+
+      <div>
+        <h2>Our Philosophy</h2>
+        <p>
+          Space travel should feel extraordinary — not overwhelming. We focus
+          on seamless preparation, expert guidance, and immersive experiences
+          that let you focus on the journey.
+        </p>
+        <p>
+          Every mission is intentional. Every detail matters.
+        </p>
+      </div>
+    </Split>
+
+    {/* SURFACE */}
+    <Surface>
+      <h2>Why Choose Space Travel Agency</h2>
+      <List>
+        <li>
+          <span>🚀</span>
           <div>
-            <h2>What We Do</h2>
+            <strong>Curated destinations</strong>
             <p>
-              We design and build high-performance web applications — from
-              focused landing pages to full-stack platforms using React and the
-              MERN stack.
-            </p>
-            <p>
-              Every project is built with scalability, maintainability, and user
-              experience in mind.
+              Carefully designed packages ranging from orbital flights to deep
+              space exploration.
             </p>
           </div>
+        </li>
 
+        <li>
+          <span>🌍</span>
           <div>
-            <h2>Our Approach</h2>
+            <strong>Unmatched perspectives</strong>
             <p>
-              We believe good software should feel invisible. That means clean
-              UI, smooth interactions, and code that’s easy to extend long after
-              launch.
-            </p>
-            <p>
-              No shortcuts. No bloated frameworks. Just solid engineering.
+              Experience Earth, the Moon, and beyond from viewpoints few will
+              ever see.
             </p>
           </div>
-        </Split>
+        </li>
 
-        {/* SURFACE */}
-        <Surface>
-          <h2>Why Work With Us</h2>
-          <List>
-            <li>
-              <span>⚡</span>
-              <div>
-                <strong>Performance first</strong>
-                <p>Optimized builds that load fast and scale cleanly.</p>
-              </div>
-            </li>
-
-            <li>
-              <span>🎨</span>
-              <div>
-                <strong>Modern, intentional design</strong>
-                <p>Simple layouts that feel polished — not trendy.</p>
-              </div>
-            </li>
-
-            <li>
-              <span>🧠</span>
-              <div>
-                <strong>Real problem solving</strong>
-                <p>We focus on what actually helps your users and business.</p>
-              </div>
-            </li>
-          </List>
-        </Surface>
-      </Container>
-    </Page2>
+        <li>
+          <span>🛰️</span>
+          <div>
+            <strong>Preparation & support</strong>
+            <p>
+              Training facilities, mission briefings, and expert-led guidance
+              every step of the way.
+            </p>
+          </div>
+        </li>
+      </List>
+    </Surface>
+  </Container>
+</Page2>
     </Page>
   );
 };
@@ -246,9 +246,11 @@ const CTA = styled.button`
 
 /* VISUAL */
 const HeroVisual = styled.div`
+  position: relative;   /* 👈 REQUIRED */
   height: 320px;
   width: 320px;
   margin: auto;
+  overflow: hidden;     /* keeps stars contained */
 
   @media (max-width: 900px) {
     height: 260px;
@@ -259,12 +261,24 @@ const HeroVisual = styled.div`
 
 const Stars = styled.div`
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(white 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.3;
+  inset: -40px;
+  background-image:
+    radial-gradient(white 0.8px, transparent 0.8px),
+    radial-gradient(white 0.6px, transparent 0.6px),
+    radial-gradient(white 1px, transparent 1px);
+  background-size:
+    45px 45px,
+    60px 60px,
+    90px 90px;
+  background-position:
+    0 0,
+    20px 35px,
+    50px 10px;
+  opacity: 0.35;
   animation: ${starDrift} 45s linear infinite;
+  pointer-events: none;
 `;
+
 
 /* PACKAGES */
 const PackagesGrid = styled.div`
