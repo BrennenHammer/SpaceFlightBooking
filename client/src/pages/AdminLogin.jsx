@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ const AdminLogin = () => {
 
   return (
     <Page>
+        <Navbar />
       <Card>
         <h1>Admin Access</h1>
         <p>Restricted system login</p>
