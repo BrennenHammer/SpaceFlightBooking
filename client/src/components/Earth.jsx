@@ -2,17 +2,16 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 import { useRef } from "react";
 
+import earthTexture from "../assets/images/earthtexture.jpg";
+
 const EarthMesh = () => {
   const meshRef = useRef();
 
-  const colorMap = useLoader(
-    TextureLoader,
-    "/src/assets/images/earthtexture.jpg"
-  );
+  const colorMap = useLoader(TextureLoader, earthTexture);
 
-  // Smooth continuous rotation (real globe rotation)
   useFrame(() => {
-    meshRef.current.rotation.y += .0100;
+    if (!meshRef.current) return;
+    meshRef.current.rotation.y += 0.01;
   });
 
   return (
