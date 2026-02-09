@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import moonImg from "../assets/images/moon.jpg";
@@ -6,6 +7,7 @@ import earthImg from "../assets/images/earth.jpg";
 import deepSpaceImg from "../assets/images/deep-space.jpg";
 import orbitImg from "../assets/images/orbit.jpg";
 import facilityImg from "../assets/images/facility.jpg";
+import { useSearchParams } from "react-router-dom";
 
 const packages = [
   {
@@ -15,6 +17,7 @@ const packages = [
     image: deepSpaceImg,
     details:
       "Private cabin, zero-gravity lounge, extended orbital duration, and uninterrupted deep-space observation windows.",
+    meeting: "Friday 6:00 PM",
   },
   {
     name: "Explorer Package",
@@ -23,6 +26,7 @@ const packages = [
     image: earthImg,
     details:
       "Multi-day orbital mission including EVA simulations, advanced astronaut training, and panoramic Earth views.",
+    meeting: "Saturday 2:00 PM",
   },
   {
     name: "Mars Package",
@@ -31,6 +35,7 @@ const packages = [
     image: marsImg,
     details:
       "Long-duration flight simulation, surface operation training, and deep-space navigation experience.",
+    meeting: "Tuesday 7:30 PM",
   },
   {
     name: "Lunar Package",
@@ -39,6 +44,7 @@ const packages = [
     image: moonImg,
     details:
       "Close lunar orbit, Earthrise viewing, and guided mission briefing by aerospace professionals.",
+    meeting: "Thursday 5:00 PM",
   },
   {
     name: "Orbital Package",
@@ -47,6 +53,7 @@ const packages = [
     image: orbitImg,
     details:
       "Short-duration orbital flight with zero-gravity experience and Earth observation.",
+    meeting: "Monday 6:15 PM",
   },
   {
     name: "Facilities Package",
@@ -55,10 +62,24 @@ const packages = [
     image: facilityImg,
     details:
       "Full-day access to astronaut preparation facilities, zero-G simulations, and mission planning labs.",
+    meeting: "Wednesday 4:00 PM",
   },
 ];
 
 const PackagesPage = () => {
+  const [searchParams] = useSearchParams();
+  const selectedName = searchParams.get("pkg");
+  const [selectedPkg, setSelectedPkg] = useState(null);
+  const refs = useRef({});
+
+  useEffect(() => {
+    if (!selectedName) return;
+    const el = refs.current[selectedName];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedName]);
+
   return (
     <Page>
       <Navbar />
@@ -72,23 +93,70 @@ const PackagesPage = () => {
       </Header>
 
       <Grid>
-        {packages.map((pkg, index) => (
-          <Card key={pkg.name} reverse={index % 2 !== 0}>
-            <Info>
-              <h2>{pkg.name}</h2>
-              <span>{pkg.mission}</span>
-              <Price>{pkg.price}</Price>
-              <Details>
-                <p>{pkg.details}</p>
-              </Details>
-            </Info>
+        {packages.map((pkg, index) => {
+          const focused = selectedName === pkg.name;
 
-            <ImageWrapper>
-              <img src={pkg.image} alt={pkg.name} />
-            </ImageWrapper>
-          </Card>
-        ))}
+          return (
+            <Card
+              key={pkg.name}
+              reverse={index % 2 !== 0}
+              $focused={focused}
+              ref={(node) => (refs.current[pkg.name] = node)}
+            >
+              <Info>
+                <h2>{pkg.name}</h2>
+                <span>{pkg.mission}</span>
+                <Price>{pkg.price}</Price>
+
+                <Details>
+                  <p>{pkg.details}</p>
+                </Details>
+
+                <BuyRow>
+                  <BuyButton onClick={() => setSelectedPkg(pkg)}>
+                    Buy
+                  </BuyButton>
+                  {focused && <Tag>Selected from Home</Tag>}
+                </BuyRow>
+              </Info>
+
+              <ImageWrapper>
+                <img src={pkg.image} alt={pkg.name} />
+              </ImageWrapper>
+            </Card>
+          );
+        })}
       </Grid>
+
+      {selectedPkg && (
+        <ModalOverlay onClick={() => setSelectedPkg(null)}>
+          <Modal onClick={(e) => e.stopPropagation()}>
+            <h2>{selectedPkg.name}</h2>
+            <ModalPrice>{selectedPkg.price}</ModalPrice>
+            <p>{selectedPkg.details}</p>
+
+            <ScheduleBox>
+              <strong>Scheduled Consultation</strong>
+              <p>
+                Mission briefing call:{" "}
+                <b>{selectedPkg.meeting}</b>
+              </p>
+              <small>
+                We’ll confirm your time zone and send a calendar invite.
+              </small>
+            </ScheduleBox>
+
+            <ModalActions>
+              <Primary onClick={() => setSelectedPkg(null)}>
+                Confirm
+              </Primary>
+              <Ghost onClick={() => setSelectedPkg(null)}>
+                Close
+              </Ghost>
+            </ModalActions>
+          </Modal>
+        </ModalOverlay>
+      )}
     </Page>
   );
 };
@@ -133,9 +201,10 @@ const Grid = styled.div`
     grid-template-columns: repeat(2, 1fr);
     max-width: 600px;
   }
+
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
-    max-width: 300px;
+    max-width: 360px;
   }
 `;
 
@@ -148,11 +217,15 @@ const Card = styled.div`
   backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   max-height: 300px;
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 
-  &:hover {
-    transform: scale(1.02);
-  }
+  ${({ $focused }) =>
+    $focused &&
+    `
+    transform: scale(1.04);
+    box-shadow: 0 22px 60px rgba(0,0,0,0.45);
+    border: 1px solid rgba(155, 220, 255, 0.35);
+  `}
 
   ${({ reverse }) =>
     reverse &&
@@ -176,36 +249,114 @@ const Info = styled.div`
   }
 
   span {
-    display: block;
     font-size: 13px;
     opacity: 0.7;
-    margin-bottom: 10px;
   }
 `;
 
 const Price = styled.div`
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 800;
   margin-top: 6px;
 `;
 
 const Details = styled.div`
   p {
-    line-height: 1.5;
     font-size: 14px;
+    line-height: 1.5;
     opacity: 0.85;
     margin-top: 6px;
   }
 `;
 
+const BuyRow = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+`;
+
+const BuyButton = styled.button`
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  background: linear-gradient(135deg, #7aa9ff, #9bdcff);
+  color: #02060a;
+`;
+
+const Tag = styled.div`
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(155, 220, 255, 0.12);
+`;
+
 const ImageWrapper = styled.div`
   width: 100%;
   height: 100%;
-  overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+`;
+
+/* MODAL */
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Modal = styled.div`
+  background: white;
+  color: #02060a;
+  padding: 28px;
+  border-radius: 22px;
+  max-width: 520px;
+  width: 100%;
+`;
+
+const ModalPrice = styled.div`
+  font-size: 22px;
+  font-weight: 800;
+  margin: 8px 0;
+`;
+
+const ScheduleBox = styled.div`
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(2, 6, 10, 0.06);
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+`;
+
+const Primary = styled.button`
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 800;
+  background: #02060a;
+  color: white;
+`;
+
+const Ghost = styled.button`
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 6, 10, 0.18);
+  background: transparent;
+  font-weight: 800;
 `;

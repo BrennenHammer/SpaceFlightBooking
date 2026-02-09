@@ -99,7 +99,7 @@ const MenuButton = styled.div`
       @media (max-width: 550px){
     margin-left: 30%;
     }
-     @media (max-width: 400px){
+     @media (max-width: 380px){
     margin-left: 20%;
     }
 `;
