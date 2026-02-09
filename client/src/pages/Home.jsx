@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import Navbar from "../components/Navbar";
 import Earth from "../components/Earth";
+import { Link } from "react-router-dom";
 
 const starDrift = keyframes`
   from { transform: translateY(0); }
@@ -105,6 +106,7 @@ const Home = () => {
             <Price>{selectedPackage.price}</Price>
             <p>{selectedPackage.description}</p>
             <CloseButton onClick={closeModal}>Close</CloseButton>
+            <BuyButton to="/packages">Buy</BuyButton>
           </Modal>
         </ModalOverlay>
       )}
@@ -485,3 +487,13 @@ const List = styled.ul`
     line-height: 1.6;
   }
 `;
+ const BuyButton = styled(Link)`
+ background: black;
+  color: white;
+  padding: 10px 14px;
+  margin-left: 70%;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+ `

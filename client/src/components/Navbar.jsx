@@ -41,7 +41,9 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;const Nav = styled.nav`
+export default Navbar;
+
+const Nav = styled.nav`
   height: 7vh;
   width: 100%;
   display: flex;
