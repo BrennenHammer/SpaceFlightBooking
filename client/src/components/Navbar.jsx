@@ -100,7 +100,7 @@ const MenuButton = styled.div`
     margin-left: 30%;
     }
      @media (max-width: 380px){
-    margin-left: 20%;
+    margin-left: 15%;
     }
 `;
 
