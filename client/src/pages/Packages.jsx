@@ -17,7 +17,6 @@ const packages = [
     image: deepSpaceImg,
     details:
       "Private cabin, zero-gravity lounge, extended orbital duration, and uninterrupted deep-space observation windows.",
-    meeting: "Friday 6:00 PM",
   },
   {
     name: "Explorer Package",
@@ -26,7 +25,6 @@ const packages = [
     image: earthImg,
     details:
       "Multi-day orbital mission including EVA simulations, advanced astronaut training, and panoramic Earth views.",
-    meeting: "Saturday 2:00 PM",
   },
   {
     name: "Mars Package",
@@ -35,7 +33,6 @@ const packages = [
     image: marsImg,
     details:
       "Long-duration flight simulation, surface operation training, and deep-space navigation experience.",
-    meeting: "Tuesday 7:30 PM",
   },
   {
     name: "Lunar Package",
@@ -44,7 +41,6 @@ const packages = [
     image: moonImg,
     details:
       "Close lunar orbit, Earthrise viewing, and guided mission briefing by aerospace professionals.",
-    meeting: "Thursday 5:00 PM",
   },
   {
     name: "Orbital Package",
@@ -53,7 +49,6 @@ const packages = [
     image: orbitImg,
     details:
       "Short-duration orbital flight with zero-gravity experience and Earth observation.",
-    meeting: "Monday 6:15 PM",
   },
   {
     name: "Facilities Package",
@@ -62,23 +57,100 @@ const packages = [
     image: facilityImg,
     details:
       "Full-day access to astronaut preparation facilities, zero-G simulations, and mission planning labs.",
-    meeting: "Wednesday 4:00 PM",
   },
 ];
 
 const PackagesPage = () => {
   const [searchParams] = useSearchParams();
   const selectedName = searchParams.get("pkg");
+
   const [selectedPkg, setSelectedPkg] = useState(null);
   const refs = useRef({});
 
+  // -------- Scheduling (Mon–Fri, 9–5, 30 min) --------
+  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+
+  const timeOptions = (() => {
+    const options = [];
+    // 9:00 -> 17:00 (5:00 PM)
+    for (let mins = 9 * 60; mins <= 17 * 60; mins += 30) {
+      const h24 = Math.floor(mins / 60);
+      const m = mins % 60;
+
+      const ampm = h24 >= 12 ? "PM" : "AM";
+      const h12 = ((h24 + 11) % 12) + 1;
+      const mm = m.toString().padStart(2, "0");
+
+      options.push(`${h12}:${mm} ${ampm}`);
+    }
+    return options;
+  })();
+
+  const weekdayOptions = (() => {
+    const days = [];
+    const now = new Date();
+
+    // next 21 days, keep only Mon–Fri
+    for (let i = 0; i < 21; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+
+      const day = d.getDay(); // 0 Sun ... 6 Sat
+      if (day === 0 || day === 6) continue;
+
+      const label = d.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      });
+
+      days.push(label);
+      if (days.length >= 10) break; // show 10 business days
+    }
+    return days;
+  })();
+
+  // scroll + highlight when coming from Home via ?pkg=
   useEffect(() => {
     if (!selectedName) return;
     const el = refs.current[selectedName];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [selectedName]);
+
+  // reset scheduler whenever modal opens
+  useEffect(() => {
+    if (!selectedPkg) return;
+    setSelectedDay("");
+    setSelectedTime("");
+  }, [selectedPkg]);
+
+  const confirmBooking = () => {
+    if (!selectedPkg) return;
+
+    if (!selectedDay || !selectedTime) {
+      alert("Please choose a weekday and a time between 9 AM and 5 PM.");
+      return;
+    }
+
+    const booking = {
+      packageName: selectedPkg.name,
+      mission: selectedPkg.mission,
+      price: selectedPkg.price,
+      day: selectedDay,
+      time: selectedTime,
+      createdAt: new Date().toISOString(),
+    };
+
+    // For now: store locally so you can verify it works.
+    // Later: replace with a POST to your backend so admin can view it.
+    const existing = JSON.parse(localStorage.getItem("bookings") || "[]");
+    existing.push(booking);
+    localStorage.setItem("bookings", JSON.stringify(existing));
+
+    alert(`Booked: ${selectedDay} at ${selectedTime}`);
+    setSelectedPkg(null);
+  };
 
   return (
     <Page>
@@ -113,9 +185,7 @@ const PackagesPage = () => {
                 </Details>
 
                 <BuyRow>
-                  <BuyButton onClick={() => setSelectedPkg(pkg)}>
-                    Buy
-                  </BuyButton>
+                  <BuyButton onClick={() => setSelectedPkg(pkg)}>Buy</BuyButton>
                   {focused && <Tag>Selected from Home</Tag>}
                 </BuyRow>
               </Info>
@@ -136,23 +206,48 @@ const PackagesPage = () => {
             <p>{selectedPkg.details}</p>
 
             <ScheduleBox>
-              <strong>Scheduled Consultation</strong>
-              <p>
-                Mission briefing call:{" "}
-                <b>{selectedPkg.meeting}</b>
-              </p>
+              <strong>Schedule your consultation</strong>
+
+              <ScheduleGrid>
+                <Field>
+                  <label>Weekday</label>
+                  <select
+                    value={selectedDay}
+                    onChange={(e) => setSelectedDay(e.target.value)}
+                  >
+                    <option value="">Select a day (Mon–Fri)</option>
+                    {weekdayOptions.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field>
+                  <label>Time</label>
+                  <select
+                    value={selectedTime}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                  >
+                    <option value="">Select a time (9:00 AM – 5:00 PM)</option>
+                    {timeOptions.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </ScheduleGrid>
+
               <small>
-                We’ll confirm your time zone and send a calendar invite.
+                Available Monday–Friday, 9 AM–5 PM, in 30-minute intervals.
               </small>
             </ScheduleBox>
 
             <ModalActions>
-              <Primary onClick={() => setSelectedPkg(null)}>
-                Confirm
-              </Primary>
-              <Ghost onClick={() => setSelectedPkg(null)}>
-                Close
-              </Ghost>
+              <Primary onClick={confirmBooking}>Confirm</Primary>
+              <Ghost onClick={() => setSelectedPkg(null)}>Close</Ghost>
             </ModalActions>
           </Modal>
         </ModalOverlay>
@@ -312,6 +407,7 @@ const ModalOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 18px;
 `;
 
 const Modal = styled.div`
@@ -321,12 +417,21 @@ const Modal = styled.div`
   border-radius: 22px;
   max-width: 520px;
   width: 100%;
+
+  h2 {
+    margin: 0 0 8px;
+  }
+
+  p {
+    line-height: 1.6;
+    opacity: 0.9;
+  }
 `;
 
 const ModalPrice = styled.div`
   font-size: 22px;
   font-weight: 800;
-  margin: 8px 0;
+  margin: 8px 0 12px;
 `;
 
 const ScheduleBox = styled.div`
@@ -334,6 +439,53 @@ const ScheduleBox = styled.div`
   padding: 14px;
   border-radius: 16px;
   background: rgba(2, 6, 10, 0.06);
+
+  strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  small {
+    display: block;
+    margin-top: 10px;
+    opacity: 0.75;
+    line-height: 1.4;
+  }
+`;
+
+const ScheduleGrid = styled.div`
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(2, 6, 10, 0.7);
+    letter-spacing: 0.02em;
+  }
+
+  select {
+    border-radius: 12px;
+    border: 1px solid rgba(2, 6, 10, 0.12);
+    padding: 10px 12px;
+    outline: none;
+    font-weight: 700;
+    background: white;
+  }
 `;
 
 const ModalActions = styled.div`
@@ -348,6 +500,7 @@ const Primary = styled.button`
   border-radius: 14px;
   border: none;
   font-weight: 800;
+  cursor: pointer;
   background: #02060a;
   color: white;
 `;
@@ -359,4 +512,5 @@ const Ghost = styled.button`
   border: 1px solid rgba(2, 6, 10, 0.18);
   background: transparent;
   font-weight: 800;
+  cursor: pointer;
 `;
