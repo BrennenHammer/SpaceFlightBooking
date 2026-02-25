@@ -1,12 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Packages from "./pages/Packages";
-import Store from './pages/Store'
+import Store from "./pages/Store";
+
+import AdminProtectedRoute from "./routes/AdminProtectedRoute";
+import AdminAppointments from "./pages/AdminAppointments";
 import AdminLogin from "./pages/AdminLogin";
-import AdminSignup from "./pages/AdminSignup";
 import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
@@ -20,7 +21,6 @@ function App() {
 
       {/* Admin Auth */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/signup" element={<AdminSignup />} />
 
       {/* Protected Admin */}
       <Route
@@ -28,6 +28,15 @@ function App() {
         element={
           <AdminProtectedRoute>
             <AdminDashboard />
+          </AdminProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/appointments"
+        element={
+          <AdminProtectedRoute>
+            <AdminAppointments />
           </AdminProtectedRoute>
         }
       />
