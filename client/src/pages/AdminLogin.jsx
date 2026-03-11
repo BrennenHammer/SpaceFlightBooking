@@ -3,27 +3,35 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+const ADMIN_EMAIL = "admin@spaceagency.com";
+const ADMIN_PASSWORD = "Space123";
+
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // MOCK LOGIN — replace with backend later
-    if (email && password) {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       localStorage.setItem("adminToken", "mock-admin-token");
       navigate("/admin/dashboard");
+    } else {
+      setError("Invalid admin credentials");
     }
   };
 
   return (
     <Page>
-        <Navbar />
+      <Navbar />
+
       <Card>
         <h1>Admin Access</h1>
         <p>Restricted system login</p>
+        <p>email: admin@spaceagency.com</p>
+        <p>password: Space123</p>
 
         <form onSubmit={handleSubmit}>
           <Input
@@ -42,12 +50,13 @@ const AdminLogin = () => {
             required
           />
 
+          {error && <Error>{error}</Error>}
+
           <Button type="submit">Sign In</Button>
         </form>
 
         <Footer>
-          <span>No account?</span>
-          <Link to="/admin/signup">Create one</Link>
+          <span>Admin access only</span>
         </Footer>
       </Card>
     </Page>
@@ -55,6 +64,7 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+
 const Page = styled.div`
   min-height: 100vh;
   display: grid;
@@ -119,6 +129,12 @@ const Button = styled.button`
   &:hover {
     opacity: 0.9;
   }
+`;
+
+const Error = styled.div`
+  margin-bottom: 12px;
+  color: #ff6b6b;
+  font-size: 14px;
 `;
 
 const Footer = styled.div`
