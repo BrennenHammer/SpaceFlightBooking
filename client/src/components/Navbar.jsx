@@ -31,7 +31,7 @@ const Navbar = () => {
           Packages
         </MenuLink>
         <MenuLink to="/admin/login" onClick={() => setOpen(false)}>
-          Admin Signup
+          Admin Login
         </MenuLink>
         <MenuLink to="/store" onClick={() => setOpen(false)}>
           Store
