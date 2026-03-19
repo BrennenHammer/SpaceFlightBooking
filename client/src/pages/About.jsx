@@ -94,12 +94,12 @@ const Page2 = styled.div`
   min-height: 100vh;
   background: radial-gradient(circle at top, #0b1d2d, #02060a 70%);
   color: white;
-  padding: 96px 24px;
+  padding: 0px 24px;
 `;
 
 const Container = styled.div`
   max-width: 100%;
-  margin: 0 auto;
+  margin: 10px auto;
 `;
 
 const Hero2 = styled.section`
