@@ -92,7 +92,7 @@ export default AboutPage;
 
 const Page2 = styled.div`
   min-height: 100vh;
-  background: radial-gradient(circle at top, #0b1d2d, #02060a 70%);
+  background: radial-gradient(circle at top, #0c2031, #02060a 70%);
   color: white;
   padding: 0px 24px;
 `;
